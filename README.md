@@ -23,6 +23,9 @@ git clone https://github.com/MoropM/createLicenses.git
 ```bash
 composer install
 npm install
+
+# Compilar el proyecto
+npm run prod  o  npm run dev
 ```
 - Crear el archivo de configuración de Laravel con:
 ```bash
