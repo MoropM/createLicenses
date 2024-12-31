@@ -2,7 +2,7 @@
 
 
 <p align="center">
-    <a href="https://laravel.com" target="_blank"><img src="" width="400"></a>
+    <a href="https://github.com/MoropM/createLicenses" target="_blank"><img src="https://raw.githubusercontent.com/MoropM/createLicenses/refs/heads/master/generate_licenses.webp" width="400"></a>
 </p>
 
 ## Generador de licencias
@@ -13,6 +13,35 @@ Este proyecto es solo de ejemplo, no es una herramienta oficial o recomendada pa
 
 El proyecto esta generado con [Laravel](https://laravel.com)
 
-## License
+## Intalar
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Clone el proyecto con:
+```bash	
+git clone https://github.com/MoropM/createLicenses.git
+```
+- Instalar dependencias con:
+```bash
+composer install
+npm install
+```
+- Crear el archivo de configuración de Laravel con:
+```bash
+cp .env.example .env
+```
+- Editar el archivo de configuración de Laravel con:
+```bash
+nano .env
+
+#Cree las siguientes claves en el archivo .env
+PUB_KEY="Agregue una clave pública aquí"
+PRV_KEY="Agregue una clave privada aquí"
+```
+- Ejecutar el servidor de Laravel con:
+```bash
+php artisan serve
+```
+- Abrir el navegador en http://127.0.0.1:8000/
+
+## Licencia
+
+Proyecto de código abierto bajo la licencia [MIT license](https://opensource.org/licenses/MIT). 
