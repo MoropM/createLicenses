@@ -1,0 +1,60 @@
+
+*,html, body {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Nunito', sans-serif;
+}
+/* Clase principal del contenido */
+.main__content { 
+}
+.main__content .content__login {
+  background-color: aquamarine;
+} 
+
+
+
+#formCreateLicense {
+  small {
+    font-size: .7rem;
+  }
+}
+.tblLicenses {
+    thead {
+      tr {
+        th {
+          font-size: 13px;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          padding: .2rem .5rem;
+          font-size: 12px;
+          .sec_content  {
+            min-height: 30px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: .5rem;
+            .center {
+              justify-content: center;
+            }
+          }
+          .btn_copy {
+            opacity: .4;
+            transition: opacity .3s ease;
+            &:hover {
+              opacity: 1;
+            }
+            &:active, &:focus, &:focus-visible {
+              outline: 0;
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+}
+
+
