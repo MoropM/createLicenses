@@ -8,6 +8,7 @@
 ## Generador de licencias
 
 Proyecto creado para generar licencias de uso de dominios personales.
+
 Genera una licencia (clave encriptada de 25 caracteres) y un token de licencia a partir de la fecha de inicio y la fecha de finalización, enlazado a un dominio personal.
 Este proyecto es solo de ejemplo, no es una herramienta oficial o recomendada para el uso en producción. 
 
