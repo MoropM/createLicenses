@@ -77,6 +77,7 @@ const addEventsTRows = (tBodyContent) => {
                         icon: 'success',
                         title: 'Token copiado al portapapeles',
                         text: `●●●●●●●●●${dataTkCopy.slice(-5)}`,
+                        confirmButtonText: `Aceptar`,
                         timer: 1500,
                         showConfirmButton: false,
                         showCloseButton: true,
@@ -228,6 +229,7 @@ const sendData = (inputUri, inputDate) => {
                 icon: 'error',
                 title: titleStr,
                 text: messageStr,
+                confirmButtonText: `Aceptar`,
             })
         }
     })

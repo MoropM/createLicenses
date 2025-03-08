@@ -24,7 +24,8 @@ class CreateLicenseRequest extends FormRequest
     public function rules()
     {
         return [
-            "uri_access" => 'required|string|max:80|min:12|unique:licenses',
+            // "uri_access" => 'required|string|max:80|min:12|unique:licenses',
+            "uri_access" => 'required|string|max:80|min:12',
             "finishDate" => 'required|string|max:10|min:10',
             // "daysActive" => 'max:5|min:1',
         ];

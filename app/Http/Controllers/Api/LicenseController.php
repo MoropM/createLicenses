@@ -25,7 +25,19 @@ class LicenseController extends Controller
     }
     function index()
     {
-        return LicenseResource::collection(License::all());
+        $allDataLicenses = License::all();
+        $currentData = Carbon::now()->toDateString();
+        if($allDataLicenses->count() > 0) { // ? Validación y actualización del estado de la licencia
+            foreach($allDataLicenses as $item) {
+                if($item->start_date < $currentData) {
+                    $updateStatus = License::where('id', $item->id)->update(['status' => 'inactive']);
+                    if($updateStatus == 1) {
+                        $item->status = 'inactive';
+                    }
+                }
+            }
+        }
+        return LicenseResource::collection($allDataLicenses);
     }
     /** Creación de registro de la nueva licencia generada
      * 
@@ -36,98 +48,119 @@ class LicenseController extends Controller
     {
         DB::beginTransaction();
         $response = array();
+        try{
+            // $request->validate([
+            //     "uri_access" => 'required|string|max:100|min:2|unique:licenses',
+            //     "finishDate" => 'required|string|max:10|min:10',
+            //     "daysActive" => 'max:100|min:1',
+            // ]);
+    
+            $endYear = '';
+            $endMonth = '';
+            $endDay = '';
+            $splodeDate = explode("-", $request->finishDate);
+            $endYear = $splodeDate[0];
+            $endMonth = $splodeDate[1];
+            $endDay = $splodeDate[2];
+            
+            $fechaVigencia = Carbon::create($endYear, $endMonth, $endDay);
+            $fecha_actual = Carbon::now();
 
-        // $request->validate([
-        //     "uri_access" => 'required|string|max:100|min:2|unique:licenses',
-        //     "finishDate" => 'required|string|max:10|min:10',
-        //     "daysActive" => 'max:100|min:1',
-        // ]);
 
-        $endYear = '';
-        $endMonth = '';
-        $endDay = '';
-        $splodeDate = explode("-", $request->finishDate);
-        $endYear = $splodeDate[0];
-        $endMonth = $splodeDate[1];
-        $endDay = $splodeDate[2];
-        
-        $fechaVigencia = Carbon::create($endYear, $endMonth, $endDay);
-        $fecha_actual = Carbon::now();
 
-        // Para saber si la fecha actual es mayor que la vigencia:
-        if($fecha_actual->gt($fechaVigencia)) {
-            $response = [
-                "status" => 0,
-                "message" => "¡Error la fecha de vigencia ($fechaVigencia) debe ser mayor al dia actual ($fecha_actual)!"
-            ];
-            return response()->json($response,403);
-        }
-
-        // $cantidadDias = date_diff($fecha_actual, $fechaVigencia)->format('%R%a');
-        $cantidadDias = $fechaVigencia->diffInDays($fecha_actual) + 1;
-
-        $generatedLicense = [];
-
-        $license = new License();
-        $license->uri_access = $request->uri_access;
-        $license->start_date = $fecha_actual->toDateString();
-        $license->finish_date = $request->finishDate;
-
-        $idRegister = 0;
-        if( $license->save() ) {
-            if( isset($license->id) ){
-                $idRegister = $license->id;
-                // Creación de token
-                $token = $license->createToken($request->uri_access)->plainTextToken;
-                // $token = $license->createToken("auth_t0kEn_Gener4tt3")->plainTextToken;
-                $generatedLicense = $this->generateLicenseNew($cantidadDias, $request);
-                if( $token != '' && count($generatedLicense) > 0 ){
-
-                    $license_update = License::where('id', $idRegister)->update([
-                        'access_token' => $token,
-                        'status' => 'active',
-                        'license_token' => $generatedLicense['license_token'],
-                        'license' => $generatedLicense['license_number'],
-                    ]);
-
-                    if( $license_update == 1 ){
-                        DB::commit();
-                        $newLicense = License::find($idRegister);
-                        return (new LicenseResource($newLicense))
-                        ->additional([
-                            'message' => 'Licencia creada correctamente',
-                            // "accessToken" => $token,
-                            // "generatedLicense" => $generatedLicense
+            $uriRegister = License::where([
+                'uri_access' => $request->uri_access,
+                'status' => 'active',
+            ])->count();
+            if($uriRegister==1) {
+                DB::rollBack();
+                $response = [
+                    "status" => 0,
+                    "message" => "¡Error! La url ($request->uri_access) ya se encuentra registrada y tiene una licencia activa.",
+                ];
+                return response()->json($response,403);
+            }
+    
+            // Para saber si la fecha actual es mayor que la vigencia:
+            if($fecha_actual->gt($fechaVigencia)) {
+                $response = [
+                    "status" => 0,
+                    "message" => "¡Error la fecha de vigencia ($fechaVigencia) debe ser mayor al dia actual ($fecha_actual)!"
+                ];
+                return response()->json($response,403);
+            }
+    
+            // $cantidadDias = date_diff($fecha_actual, $fechaVigencia)->format('%R%a');
+            $cantidadDias = $fechaVigencia->diffInDays($fecha_actual) + 1;
+    
+            $generatedLicense = [];
+    
+            $license = new License();
+            $license->uri_access = $request->uri_access;
+            $license->start_date = $fecha_actual->toDateString();
+            $license->finish_date = $request->finishDate;
+    
+            $idRegister = 0;
+            if( $license->save() ) {
+                if( isset($license->id) ){
+                    $idRegister = $license->id;
+                    // Creación de token
+                    $token = $license->createToken($request->uri_access.'.'.time())->plainTextToken;
+                    // $token = $license->createToken("auth_t0kEn_Gener4tt3")->plainTextToken;
+                    $generatedLicense = $this->generateLicenseNew($cantidadDias, $request);
+                    if( $token != '' && count($generatedLicense) > 0 ){
+    
+                        $license_update = License::where('id', $idRegister)->update([
+                            'access_token' => $token,
+                            'status' => 'active',
+                            'license_token' => $generatedLicense['license_token'],
+                            'license' => $generatedLicense['license_number'],
                         ]);
+    
+                        if( $license_update == 1 ){
+                            DB::commit();
+                            $newLicense = License::find($idRegister);
+                            return (new LicenseResource($newLicense))
+                            ->additional([
+                                'message' => 'Licencia creada correctamente',
+                                // "accessToken" => $token,
+                                // "generatedLicense" => $generatedLicense
+                            ]);
+                        }
                     }
+                }
+                else {
+                    DB::commit();
+                    $response = [
+                        "status" => 1,
+                        "message" => "¡Licencia creada correctamente!"
+                    ];
+                    return response()->json($response);
+                    // return (new LicenseResource($license))
+                    //     ->additional([
+                    //         'message' => 'Licencia creada correctamente',
+                    //     ]);
                 }
             }
             else {
-                DB::commit();
+                DB::rollBack();
                 $response = [
-                    "status" => 1,
-                    "message" => "¡Licencia creada correctamente!"
+                    "status" => 0,
+                    "message" => "¡Error al intentar registrar a la url ($request->uri_access)!"
                 ];
-                return response()->json($response);
-                // return (new LicenseResource($license))
-                //     ->additional([
-                //         'message' => 'Licencia creada correctamente',
-                //     ]);
+                return response()->json($response,403);
+                // return (new LicenseResource($license) )
+                //         ->additional(['message' => "¡Error al intentar registrar a la marca ($request->uri_access)!"])
+                //             ->response()
+                //             ->setStatusCode(403);
             }
         }
-        else {
+        catch(\Exception $e) {
             DB::rollBack();
-            $response = [
-                "status" => 0,
-                "message" => "¡Error al intentar registrar a la url ($request->uri_access)!"
-            ];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
             return response()->json($response,403);
-            // return (new LicenseResource($license) )
-            //         ->additional(['message' => "¡Error al intentar registrar a la marca ($request->uri_access)!"])
-            //             ->response()
-            //             ->setStatusCode(403);
         }
-
     }
     /** Desencriptación de token de licencia
      * Tomar encuenta los siguientes parametros de creación del token
@@ -231,9 +264,36 @@ class LicenseController extends Controller
     */
     function verifyLicense (Request $request)
     {
-        
-        $verifyLicense = License::join('personal_access_tokens', 'licenses.id', '=', 'personal_access_tokens.tokenable_id')
-            ->where('personal_access_tokens.id', $request->id)->get();
+        $typeReq = $request->type_req??'';
+        $verifyLicense = [];
+        if( $typeReq==''){
+            $verifyLicense = License::join('personal_access_tokens', 'licenses.id', '=', 'personal_access_tokens.tokenable_id')
+                ->where('personal_access_tokens.id', $request->id)->get();
+        }
+        if( $typeReq=='license'){
+            $verifyLicense = License::where('license', $request->id)->get();
+        }
+        if( $typeReq=='token'){
+            $license = License::where('access_token', $request->id)->pluck('license')->first();
+            $response = [
+                "status" => false,
+                "code_http" => 200,
+                "message" => "",
+                "data" => []
+            ];
+            if($license==''){
+                $response["message"] = "El token no existe";
+            }
+            else {
+                $response["status"] = true;
+                $response["message"] = "Licencia registrada";
+                $response["data"] = [
+                    "license" => $license
+                ];
+            }
+            return response()->json($response,200);
+
+        }
         $response = [
             // "status" => true,
             // "code_http" => 200,
@@ -251,9 +311,18 @@ class LicenseController extends Controller
             if( count($verifyLicense) > 0 ) {
                 $valNumberDays = '';
                 $strLicense = '';
+                $uriDomain = '';
+                $srtToken = '';
+                $startDate = '';
+                $endDate = '';
                 foreach( $verifyLicense as $dataStatusLicense ) {
                     $statusLicense = $dataStatusLicense->status;
                     $strLicense = $dataStatusLicense->license;
+
+                    $uriDomain = $dataStatusLicense->uri_access;
+                    $srtToken = $dataStatusLicense->access_token;
+                    $startDate = $dataStatusLicense->start_date;
+                    $endDate = $dataStatusLicense->finish_date;
                 }
                 $explodeStrLicense = explode('MS',$strLicense);
                 if( count($explodeStrLicense) > 1 ) {
@@ -268,9 +337,12 @@ class LicenseController extends Controller
                         "data" => [
                             "status" => $statusLicense,
                             "remaining_days" => 0,
+                            "uri_domain" => $uriDomain,
+                            "token" => $srtToken,
+                            "start_date" => $startDate,
+                            "finish_date" => $endDate,
                         ]
                     ];
-                    return response()->json($response,200);
                 }
                 else{
                     // return true;
@@ -281,10 +353,14 @@ class LicenseController extends Controller
                         "data" => [
                             "status" => $statusLicense,
                             "remaining_days" => (int)$valNumberDays,
+                            "uri_domain" => $uriDomain,
+                            "token" => $srtToken,
+                            "start_date" => $startDate,
+                            "finish_date" => $endDate,
                         ]
                     ];
-                    return response()->json($response,200);
                 }
+                return response()->json($response,200);
             }
             else{ 
                 // return false;

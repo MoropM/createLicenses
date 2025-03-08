@@ -10,3 +10,15 @@ if( formCreateLicense !== null ) {
     })
     .catch(error => console.error('Error:', error))
 }
+
+
+const contentVerifyLicenses = document.querySelector('.content_verify_licenses') || null;
+if( contentVerifyLicenses !== null ) {
+    import('./validate_licenses.js')
+    .then( response => {
+        console.log(  response  );
+        const { contentVerifyLicensesInit } = response
+        contentVerifyLicensesInit()
+    })
+    .catch(error => console.error('Error:', error))
+}

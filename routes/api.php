@@ -41,3 +41,4 @@ Route::group( ['middleware' => ["auth:sanctum"]], function(){
 });
 Route::get('licences', [LicenseController::class, 'index']);
 Route::get('verify_license', [LicenseController::class, 'verifyLicense']);
+Route::post('verify_license', [LicenseController::class, 'verifyLicense']);

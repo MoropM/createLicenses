@@ -18,3 +18,7 @@ Route::get('/', function () {
     return view('create_license');
     //return view('login');
 });
+
+Route::get('/validate_license', function () {
+    return view('verify_license');
+})->name('verifyLicense');
