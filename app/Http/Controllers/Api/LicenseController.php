@@ -29,10 +29,16 @@ class LicenseController extends Controller
         $currentData = Carbon::now()->toDateString();
         if($allDataLicenses->count() > 0) { // ? Validación y actualización del estado de la licencia
             foreach($allDataLicenses as $item) {
-                if($item->start_date < $currentData) {
+                if($item->finish_date < $currentData && $item->status == 'active') {
                     $updateStatus = License::where('id', $item->id)->update(['status' => 'inactive']);
                     if($updateStatus == 1) {
                         $item->status = 'inactive';
+                    }
+                }
+                if($item->finish_date > $currentData && $item->status == 'inactive') {
+                    $updateStatus = License::where('id', $item->id)->update(['status' => 'inactive']);
+                    if($updateStatus == 1) {
+                        $item->status = 'active';
                     }
                 }
             }
