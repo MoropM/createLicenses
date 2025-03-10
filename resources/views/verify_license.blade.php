@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('main_login_content')
     <div class="container py-5">
-        <div class="title_link">
+        <div class="title_link mb-3">
             <h1>Validador de licencias</h1>
             <a href="/" class="btn btn-link">Regresar <svg width="17"  height="17"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg></a>
         </div>

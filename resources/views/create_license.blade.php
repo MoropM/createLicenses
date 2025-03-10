@@ -23,13 +23,13 @@
 <body class="py-2">
     <div class="container py-5">
         <main>
-            <div class="title_link">
+            <div class="title_link mb-4">
                 <h1>Generador de licencias</h1>
-                <a href="{{ route('verifyLicense') }}" class="btn btn-link">Verificar licencias <svg  width="17"  height="17"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg></a>
+                <a href="{{ route('verifyLicense') }}" class="btn btn-link">Validador de licencias <svg  width="17"  height="17"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg></a>
             </div>
-            <form action="POST" id="formCreateLicense"  class="mt-3">
+            <form action="POST" id="formCreateLicense"  class="mb-4">
                 @csrf
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-md-6 col-xl-4">
                         <div class="form-group">
                             <label for="uriGen" >Dominio <small>(URL)</small></label> 
@@ -57,7 +57,7 @@
                 </div>
             </form>
 
-            <div class="content__t tblLicenses">
+            <div class="content__t tblLicenses table-responsive">
                 <table class="table" >
                     <thead>
                         <tr>

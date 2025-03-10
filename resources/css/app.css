@@ -28,7 +28,10 @@
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: .5rem;
+  h1 {
+    margin-bottom: 0;
+  }
   a {
     color: var(--color_link);
     text-decoration: none;
@@ -49,6 +52,8 @@
   }
 }
 .tblLicenses {
+    /* width: 100%;
+    overflow-x: auto; */
     thead {
       tr {
         th {
