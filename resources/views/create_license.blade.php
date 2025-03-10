@@ -62,8 +62,8 @@
                     <thead>
                         <tr>
                             <th>Dominio <small>(URL)</small></th>
-                            <th>Fecha de creación</th>
-                            <th>Fecha de finalización</th>
+                            <th>Fecha creación</th>
+                            <th>Fecha finalización</th>
                             <th>N° licencia</th>
                             <th>Token</th>
                             <th>Estatus</th>
