@@ -36,7 +36,7 @@ class LicenseController extends Controller
                     }
                 }
                 if($item->finish_date > $currentData && $item->status == 'inactive') {
-                    $updateStatus = License::where('id', $item->id)->update(['status' => 'inactive']);
+                    $updateStatus = License::where('id', $item->id)->update(['status' => 'active']);
                     if($updateStatus == 1) {
                         $item->status = 'active';
                     }

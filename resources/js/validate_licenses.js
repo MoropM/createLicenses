@@ -58,10 +58,11 @@ const loadValidateAll = () => {
             if( btnVerify !== null ) {
                 btnVerify.addEventListener('click', (e) => {
                     if( nLicense !== null ) {
-                        const valNLicense = nLicense.value;
+                        const valNLicense = nLicense.value??'';
                         if( valNLicense !== '' ) {
+                            nLicense.value = valNLicense.trim();
                             let data = {
-                                "id": valNLicense,
+                                "id": valNLicense.trim(),
                                 "type": 0,
                                 "type_req": "license",
                             };
